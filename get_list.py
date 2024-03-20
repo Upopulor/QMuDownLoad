@@ -13,7 +13,7 @@ def get_list(playlist_id):
     return result
 
 
-def parse_list(data):
+def parse_list(data,songTypeInput):
     arr = data['data']['cdlist'][0]['songlist']
     songs_info = []
 
@@ -21,19 +21,30 @@ def parse_list(data):
         signer_names = str.join('|', [signer['name'] for signer in i['singer']])
         song_type = None
         file_size = 0
-#        if i['sizeflac'] != 0:
-#            song_type = 'flac'
-#            file_size = i['sizeflac']
-#        elif i['size320'] != 0:
-#       if i['size320'] != 0:
-#            song_type = '320'
-#            file_size = i['size320']
-#        elif i['size128'] != 0:
-        if i['size128'] != 0:
+        # if i['sizeflac'] != 0:
+        #    song_type = 'flac'
+        #    file_size = i['sizeflac']
+        # elif i['size320'] != 0:
+        #    song_type = '320'
+        #    file_size = i['size320']
+        # elif i['size128'] != 0:
+        #     song_type = '128'
+        #     file_size = i['size128']
+        # else:
+        #     raise Exception('{0} 未找到相应解析度的音乐'.format(i['songname']))
+
+        if i[songTypeInput] != 0:
+            song_type = songTypeInput[4:0]
+            file_size = i['songTypeInput']
+        elif i['size320'] != 0:
+           song_type = '320'
+           file_size = i['size320']
+        elif i['size128'] != 0:
             song_type = '128'
             file_size = i['size128']
         else:
-            raise Exception('{0} 未找到相应解析度的音乐'.format(i['songname']))
+            print('未找到相应解析度的音乐', i['songname'])
+            continue
 
         m = dict()
         m['songname'] = i['songorig']

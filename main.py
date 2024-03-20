@@ -1,4 +1,5 @@
 import os
+import shutil
 import time
 
 import requests
@@ -8,12 +9,27 @@ from down import download_file
 from get_list import merge_songs_info, get_list, parse_list
 from json_oper import store_json, load_json
 from sixyin import search, verify_key, get_download_link
+from songs_proc import check_fail, verify_file, check_duplicate, export_files
 
-# playlist_id = '3222851321'  # QQ音乐歌单ID，通过分享获取
-playlist_id = '8671271436'  # QQ音乐歌单ID，通过分享获取
-unlock_key = '2531'  # 需通过flac.life官网免费获取解锁码
-cache_dir = 'D:/workspace/1cur/cache'
-music_dir = 'D:/workspace/1cur/music'
+# playlist_id = '3222851321'
+playlist_idInput = input("请输入列表id：")
+unlock_keyInput = input("请输入列表token：")
+songTypeInput = input("请输入音质格式(sizeflac,size320,size128)参数：")
+if(songTypeInput != 'sizeflac' and songTypeInput != 'size320' and songTypeInput != 'size128'):
+    raise Exception('音质格式输入错误')
+#1
+playlist_id = '8544120534'
+unlock_key = '7E61'  # 需通过flac.life官网免费获取解锁码
+songType = 'size320'
+#2
+playlist_id = playlist_idInput
+unlock_key = unlock_keyInput
+songType = songTypeInput
+current_directory = os.getcwd()
+parent_directory = os.path.dirname(current_directory)
+cache_dir = parent_directory+'\\QMuDownLoadCache\\cache'
+music_dir = parent_directory+'\\QMuDownLoadCache\\music'
+export_dir = parent_directory+'\\QMuDownLoadCache\\'+playlist_id+'-export'
 start_at_index = 0
 paylist_raw_json_path = os.path.join(cache_dir, 'playlist.{0}.raw.json'.format(playlist_id))
 paylist_info_json_path = os.path.join(cache_dir, 'playlist.{0}.json'.format(playlist_id))
@@ -41,7 +57,7 @@ store_json(paylist_raw_json_path, playlist_raw)
 # playlist_raw = load_json(paylist_raw_json_path)
 
 # 解析播放列表
-songs_info = parse_list(playlist_raw)
+songs_info = parse_list(playlist_raw,songTypeInput)
 
 # 若旧歌单存在则合并
 if os.path.exists(paylist_info_json_path):
@@ -61,7 +77,7 @@ cuowu = 0
 # store_json(paylist_info_json_path, songs_info)
 
 for i, song_info in enumerate(songs_info):
-    if i>lenStart-cuowu:
+    if i>=lenStart-cuowu:
         break
     if i < start_at_index:
         print('{0}/{1}: JUMP'.format(i + 1, len(songs_info)))
@@ -85,3 +101,14 @@ for i, song_info in enumerate(songs_info):
     store_json(paylist_info_json_path, songs_info)
 
     print('{0}/{1}: SUCCESS {2}'.format(i + 1, len(songs_info), song_info))
+
+#重命名
+map_info_json_path = os.path.join(cache_dir, 'map.{0}.json'.format(playlist_id))
+check_fail(songs_info)
+for i in songs_info:
+    verify = verify_file(music_dir, i)
+    if not verify:
+        print('VERIFY FAILED :{0}-{1}'.format(i['signernames'], i['songname']))
+check_duplicate(songs_info)
+export_files(export_dir, music_dir, songs_info, map_info_json_path)
+shutil.rmtree(music_dir)

@@ -33,7 +33,7 @@ def check_fail(songs_info):
 def check_duplicate(songs_info):
     seen = {}
     for song_info in songs_info:
-        val = song_info['signernames'] + ' - ' + song_info['songaliasname']
+        val = song_info['songaliasname']+ ' - ' +song_info['signernames']
         if val is not None and val in seen:
             seen[val] = seen[val] + 1
             print(f"Duplicate {seen[val]} songs found in dictionary: {val}")
@@ -71,11 +71,18 @@ def export_files(export_dir, src_dir, songs_info, mapping_file):
 
     # 导出文件夹
     # Create destination folder if it doesn't exist
+    export_dirOrg = export_dir
     if not os.path.exists(export_dir):
         os.makedirs(export_dir)
     else:
-        print('导出文件夹已存在，请删除后重试')
-        return
+        dirr = 1;
+        export_dir = export_dirOrg + str(dirr)
+        while(os.path.exists(export_dir)):
+            dirr = dirr + 1
+            export_dir = export_dirOrg+str(dirr)
+        os.makedirs(export_dir)
+
+
 
     # Copy all files from source folder to destination folder
     for idx, (src_fn, export_fn) in enumerate(songs_info_id_filename_mapper.items()):
@@ -85,11 +92,11 @@ def export_files(export_dir, src_dir, songs_info, mapping_file):
         print(f"{idx + 1}: Copied {source_path} to {destination_path}")
 
 
-songs_info = load_json(paylist_info_json_path)
-check_fail(songs_info)
-for i in songs_info:
-    verify = verify_file(music_dir, i)
-    if not verify:
-        print('VERIFY FAILED :{0}-{1}'.format(i['signernames'], i['songname']))
-check_duplicate(songs_info)
-export_files(export_dir, music_dir, songs_info, map_info_json_path)
+# songs_info = load_json(paylist_info_json_path)
+# check_fail(songs_info)
+# for i in songs_info:
+#     verify = verify_file(music_dir, i)
+#     if not verify:
+#         print('VERIFY FAILED :{0}-{1}'.format(i['signernames'], i['songname']))
+# check_duplicate(songs_info)
+# export_files(export_dir, music_dir, songs_info, map_info_json_path)
