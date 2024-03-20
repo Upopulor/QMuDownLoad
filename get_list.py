@@ -33,9 +33,26 @@ def parse_list(data,songTypeInput):
         # else:
         #     raise Exception('{0} 未找到相应解析度的音乐'.format(i['songname']))
 
-        if i[songTypeInput] != 0:
-            song_type = songTypeInput[4:0]
-            file_size = i['songTypeInput']
+        if songTypeInput != '':
+            if songTypeInput=='1':
+                song_type = 'flac'
+                file_size = i['sizeflac']
+            elif songTypeInput=='2':
+                song_type = '320'
+                file_size = i['size320']
+            elif songTypeInput=='3':
+                song_type = '128'
+                file_size = i['size128']
+            else:
+                if i['size320'] != 0:
+                    song_type = '320'
+                    file_size = i['size320']
+                elif i['size128'] != 0:
+                    song_type = '128'
+                    file_size = i['size128']
+                else:
+                    print('未找到相应解析度的音乐', i['songname'])
+                    continue
         elif i['size320'] != 0:
            song_type = '320'
            file_size = i['size320']
