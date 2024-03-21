@@ -2,10 +2,9 @@ import os
 
 import requests
 from requests.adapters import HTTPAdapter, Retry
-
-
+from get_list import  get_list,list_split
 from sixyin import verify_key
-from one import done
+from concurrent.futures import ThreadPoolExecutor,wait,ALL_COMPLETED
 from ones import dones
 
 # 1输入
@@ -30,10 +29,10 @@ from ones import dones
 
 #本地运行
 downTypeInput = '1'
-unlock_keyInput = 'BD20' # 需通过flac.life官网免费获取解锁码
+unlock_keyInput = '0076' # 需通过flac.life官网免费获取解锁码
 #1:sizeflac,2:size320,3:size128
 songTypeInput = '2'
-playlist_id = '8304238333'
+playlist_id = '9109342223'
 
 parent_directory = os.path.dirname(os.getcwd())
 cache_dir = parent_directory + '\\QMuDownLoadCache\\cache'
@@ -52,16 +51,29 @@ retries = Retry(total=3, backoff_factor=1)
 session.mount('http://', HTTPAdapter(max_retries=retries))
 session.mount('https://', HTTPAdapter(max_retries=retries))
 
-# 需通过flac.life官网免费获取解锁码
+#需通过flac.life官网免费获取解锁码
 stat = verify_key(unlock_keyInput)
 print('key verify: ', stat)
 if stat is False:
     raise Exception()
 
-if downTypeInput == '2':
-    done()
-elif downTypeInput == '1':
-    dones(playlist_id,paylist_raw_json_path,paylist_info_json_path,songTypeInput,music_dir,cache_dir,export_dir,unlock_keyInput)
+
+
+playlist_raw = get_list(playlist_id)
+cur = playlist_raw['data']['cdlist'][0]['songlist']
+playlist_rawsplit = list_split(playlist_raw['data']['cdlist'][0]['songlist'],3)
+
+ss =len(playlist_rawsplit)
+idxx = 1
+all_task = []
+with ThreadPoolExecutor(max_workers=len(playlist_rawsplit)) as pool:
+    for cnt in playlist_rawsplit:
+        all_task.append(pool.submit(dones,cnt,idxx,cache_dir,music_dir,export_dir,playlist_id,songTypeInput,unlock_keyInput))
+
+    # 主线程等待所有子线程完成
+    wait(all_task, return_when=ALL_COMPLETED)
+    print("----complete-----")
+
 
 
 
