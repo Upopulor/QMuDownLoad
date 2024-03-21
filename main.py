@@ -30,10 +30,10 @@ from ones import dones
 
 #本地运行
 downTypeInput = '1'
-unlock_keyInput = 'F7B3' # 需通过flac.life官网免费获取解锁码
+unlock_keyInput = 'BD20' # 需通过flac.life官网免费获取解锁码
 #1:sizeflac,2:size320,3:size128
-songTypeInput = '3'
-playlist_id = '8544120534'
+songTypeInput = '2'
+playlist_id = '8304238333'
 
 parent_directory = os.path.dirname(os.getcwd())
 cache_dir = parent_directory + '\\QMuDownLoadCache\\cache'

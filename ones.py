@@ -65,9 +65,11 @@ def dones(playlist_id,paylist_raw_json_path,paylist_info_json_path,songTypeInput
     map_info_json_path = os.path.join(cache_dir, 'map.{0}.json'.format(playlist_id))
     check_fail(songs_info)
     for i in songs_info:
-        verify = verify_file(music_dir, i)
-        if not verify:
-            print('VERIFY FAILED :{0}-{1}'.format(i['signernames'], i['songname']))
+        if 'download_done' in song_info:
+            if song_info['download_done']==True:
+                verify = verify_file(music_dir, i)
+                if not verify:
+                    print('VERIFY FAILED :{0}-{1}'.format(i['signernames'], i['songname']))
     check_duplicate(songs_info)
     export_files(export_dir, music_dir, songs_info, map_info_json_path)
     shutil.rmtree(music_dir)

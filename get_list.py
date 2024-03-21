@@ -104,3 +104,6 @@ def merge_songs_info(new_songs_info, old_songs_info):
                 n['download_path'] = match_old_dict['download_path']
                 n['download_done'] = match_old_dict['download_done']
                 n['download_verify'] = match_old_dict['download_verify']
+
+def list_split(items, n):
+    return [items[i:i+n] for i in range(0, len(items), n)]

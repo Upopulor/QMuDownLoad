@@ -6,13 +6,13 @@ import shutil
 from down import verify_file
 from json_oper import load_json, store_json
 
-playlist_id = '8671271436'  # QQ音乐歌单ID，通过分享获取
-cache_dir = 'D:/workspace/1cur/cache'
-music_dir = 'D:/workspace/1cur/music'
-export_dir = 'D:/workspace/1cur/export'
+playlist_id = '8304238333'  # QQ音乐歌单ID，通过分享获取
+cache_dir = 'D:/workspace/QMuDownLoadCache/cache'
+music_dir = 'D:/workspace/QMuDownLoadCache/music'
+export_dir = 'D:/workspace/QMuDownLoadCache/export'
 paylist_info_json_path = os.path.join(cache_dir, 'playlist.{0}.json'.format(playlist_id))
 map_info_json_path = os.path.join(cache_dir, 'map.{0}.json'.format(playlist_id))
-songs_format = '{signernames} - {songaliasname}'
+songs_format = '{songaliasname}-{signernames}'
 
 
 # songs_format = '{signernames} - {songaliasname} - {albumname}'
@@ -26,14 +26,14 @@ def check_fail(songs_info):
                 and song_info['download_verify'] == True):
             print('FAIL at', song_info['signernames'], '-', song_info['songaliasname'])
         else:
-            pass
-            # print('PASS at', song_info['signernames'], '-', song_info['songaliasname'])
+            #pass
+            print('PASS at', song_info['signernames'], '-', song_info['songaliasname'])
 
 
 def check_duplicate(songs_info):
     seen = {}
     for song_info in songs_info:
-        val = song_info['songaliasname']+ ' - ' +song_info['signernames']
+        val = song_info['signernames']+ ' - ' +song_info['songaliasname']
         if val is not None and val in seen:
             seen[val] = seen[val] + 1
             print(f"Duplicate {seen[val]} songs found in dictionary: {val}")
@@ -51,9 +51,11 @@ def export_files(export_dir, src_dir, songs_info, mapping_file):
 
     # 生成映射字典
     for song_info in songs_info:
-        filename = songs_format.format_map(song_info).replace("|", " ")
-        fileext = ('.flac' if song_info['songtype'] == 'flac' else '.mp3')
-        songs_info_id_filename_mapper[song_info['strMediaMid']] = sanitize_path(f'{filename}{fileext}')
+        if 'download_done' in song_info:
+            if song_info['download_done']==True:
+                filename = songs_format.format_map(song_info).replace("|", " ")
+                fileext = ('.flac' if song_info['songtype'] == 'flac' else '.mp3')
+                songs_info_id_filename_mapper[song_info['strMediaMid']] = sanitize_path(f'{filename}{fileext}')
 
     # 重命名相同歌名
     seen = {}
@@ -92,11 +94,13 @@ def export_files(export_dir, src_dir, songs_info, mapping_file):
         print(f"{idx + 1}: Copied {source_path} to {destination_path}")
 
 
-# songs_info = load_json(paylist_info_json_path)
-# check_fail(songs_info)
-# for i in songs_info:
-#     verify = verify_file(music_dir, i)
-#     if not verify:
-#         print('VERIFY FAILED :{0}-{1}'.format(i['signernames'], i['songname']))
-# check_duplicate(songs_info)
-# export_files(export_dir, music_dir, songs_info, map_info_json_path)
+songs_info = load_json(paylist_info_json_path)
+check_fail(songs_info)
+for i in songs_info:
+    if 'download_done' in i:
+        if i['download_done'] == True:
+            verify = verify_file(music_dir, i)
+            if not verify:
+                print('VERIFY FAILED :{0}-{1}'.format(i['signernames'], i['songname']))
+check_duplicate(songs_info)
+export_files(export_dir, music_dir, songs_info, map_info_json_path)
