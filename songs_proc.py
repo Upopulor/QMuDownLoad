@@ -94,13 +94,13 @@ def export_files(export_dir, src_dir, songs_info, mapping_file):
         print(f"{idx + 1}: Copied {source_path} to {destination_path}")
 
 
-songs_info = load_json(paylist_info_json_path)
-check_fail(songs_info)
-for i in songs_info:
-    if 'download_done' in i:
-        if i['download_done'] == True:
-            verify = verify_file(music_dir, i)
-            if not verify:
-                print('VERIFY FAILED :{0}-{1}'.format(i['signernames'], i['songname']))
-check_duplicate(songs_info)
-export_files(export_dir, music_dir, songs_info, map_info_json_path)
+# songs_info = load_json(paylist_info_json_path)
+# check_fail(songs_info)
+# for i in songs_info:
+#     if 'download_done' in i:
+#         if i['download_done'] == True:
+#             verify = verify_file(music_dir, i)
+#             if not verify:
+#                 print('VERIFY FAILED :{0}-{1}'.format(i['signernames'], i['songname']))
+# check_duplicate(songs_info)
+# export_files(export_dir, music_dir, songs_info, map_info_json_path)

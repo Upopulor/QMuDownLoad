@@ -14,10 +14,10 @@ def get_list(playlist_id):
 
 
 def parse_list(data,songTypeInput):
-    arr = data['data']['cdlist'][0]['songlist']
+    #arr = data['data']['cdlist'][0]['songlist']
     songs_info = []
 
-    for i in arr:
+    for i in data:
         signer_names = str.join('|', [signer['name'] for signer in i['singer']])
         song_type = None
         file_size = 0

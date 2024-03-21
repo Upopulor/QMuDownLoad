@@ -35,9 +35,9 @@ songTypeInput = '2'
 playlist_id = '9109342223'
 
 parent_directory = os.path.dirname(os.getcwd())
-cache_dir = parent_directory + '\\QMuDownLoadCache\\cache'
-music_dir = parent_directory + '\\QMuDownLoadCache\\music'
-export_dir = parent_directory + '\\QMuDownLoadCache\\' + playlist_id + '-export'
+cache_dir = parent_directory + '\\QMuDownLoadCache2\\cache'
+music_dir = parent_directory + '\\QMuDownLoadCache2\\music'
+export_dir = parent_directory + '\\QMuDownLoadCache2\\' + playlist_id + '-export'
 paylist_raw_json_path = os.path.join(cache_dir, 'playlist.{0}.raw.json'.format(playlist_id))
 paylist_info_json_path = os.path.join(cache_dir, 'playlist.{0}.json'.format(playlist_id))
 
@@ -61,14 +61,15 @@ if stat is False:
 
 playlist_raw = get_list(playlist_id)
 cur = playlist_raw['data']['cdlist'][0]['songlist']
-playlist_rawsplit = list_split(playlist_raw['data']['cdlist'][0]['songlist'],3)
+playlist_rawsplit = list_split(playlist_raw['data']['cdlist'][0]['songlist'],5)
 
 ss =len(playlist_rawsplit)
 idxx = 1
 all_task = []
-with ThreadPoolExecutor(max_workers=len(playlist_rawsplit)) as pool:
+with ThreadPoolExecutor(max_workers=10) as pool:
     for cnt in playlist_rawsplit:
         all_task.append(pool.submit(dones,cnt,idxx,cache_dir,music_dir,export_dir,playlist_id,songTypeInput,unlock_keyInput))
+        idxx = idxx + 1
 
     # 主线程等待所有子线程完成
     wait(all_task, return_when=ALL_COMPLETED)
