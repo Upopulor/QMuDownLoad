@@ -1,13 +1,12 @@
 import os
 import shutil
-import time
 import threading
 
-from down import download_file
+from down import download_file,verify_file
 from get_list import merge_songs_info, get_list, parse_list
 from json_oper import store_json, load_json
 from sixyin import search, verify_key, get_download_link
-from songs_proc import check_fail, verify_file, check_duplicate, export_files
+from songs_proc import check_fail, check_duplicate, export_files
 
 def dones(playlist_raw,idxx,cache_dirr,music_dirr,export_dirr,playlist_idd,songTypeInput,unlock_key):
     start_at_index = 0
@@ -62,8 +61,8 @@ def dones(playlist_raw,idxx,cache_dirr,music_dirr,export_dirr,playlist_idd,songT
     map_info_json_path = os.path.join(cache_dircur, 'map.{0}.json'.format(playlist_idcur))
     check_fail(songs_info)
     for i in songs_info:
-        if 'download_done' in song_info:
-            if song_info['download_done']==True:
+        if 'download_done' in i:
+            if i['download_done']==True:
                 verify = verify_file(music_dircur, i)
                 if not verify:
                     print(thread_name+'---'+'VERIFY FAILED :{0}-{1}'.format(i['signernames'], i['songname']))

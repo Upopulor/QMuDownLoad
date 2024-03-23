@@ -1,10 +1,9 @@
-import json
 import os
 import re
 import shutil
 
-from down import verify_file
-from json_oper import load_json, store_json
+
+from json_oper import store_json
 
 playlist_id = '8304238333'  # QQ音乐歌单ID，通过分享获取
 cache_dir = 'D:/workspace/QMuDownLoadCache/cache'
